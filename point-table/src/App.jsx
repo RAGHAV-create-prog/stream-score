@@ -115,7 +115,7 @@ export function LivePanel({
                   <div className="text-sm text-gray-400">Kills: {stats.kills}</div>
                 </div>
 
-                <div className="flex gap-2 items-center">
+                <div className="flex items-center gap-3 whitespace-nowrap">
                   {locked ? (
                     <select
                       aria-label={`position ${team.name}`}
@@ -136,7 +136,7 @@ export function LivePanel({
                       ))}
                     </select>
                   ) : (
-                    <div className="flex items-center gap-3 whitespace-nowrap">
+                    <>
                       <button
                         onClick={() => onKillChange(team.id, -1)}
                         aria-label={`decrease ${team.name} kills`}
@@ -152,7 +152,7 @@ export function LivePanel({
                       >
                         +
                       </button>
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -561,16 +561,14 @@ function App() {
           </div>
 
           <div className="flex gap-2">
-            {/* Copy Results always visible (disabled when none) */}
-            {!obsMode && (
-              <button
-                onClick={handleCopyResults}
-                disabled={!lastResults}
-                className={`px-3 py-1 rounded bg-indigo-600 ${!lastResults ? "opacity-50 cursor-not-allowed" : ""}`}
-              >
-                {copying ? "Copying..." : "Copy Results"}
-              </button>
-            )}
+            {/* Copy Results visible (disabled when none) */}
+            <button
+              onClick={handleCopyResults}
+              disabled={!lastResults}
+              className={`px-3 py-1 rounded bg-indigo-600 ${!lastResults ? "opacity-50 cursor-not-allowed" : ""}`}
+            >
+              {copying ? "Copying..." : "Copy Results"}
+            </button>
 
             <button onClick={() => setObsMode((v) => !v)} className={`px-3 py-1 rounded ${obsMode ? "bg-red-600" : "bg-green-600"}`}>
               {obsMode ? "OBS: ON" : "OBS: OFF"}
@@ -699,12 +697,12 @@ function App() {
                     <div key={team.id} className="grid grid-cols-3 gap-4 items-center">
                       <div className="font-medium">{team.name}</div>
 
-                      {/* Kills column: show +/- when match is live and not in OBS */}
+                      {/* Kills column: show +/- when match is live */}
                       <div className="flex items-center gap-3 whitespace-nowrap">
-                        {!obsMode && !locked ? (
+                        {!locked ? (
                           <>
                             <button onClick={() => handleKillChange(team.id, -1)} className="inline-flex items-center justify-center px-3 py-1 bg-red-600 rounded">-</button>
-                            <div className="text-lg px-2">{stats.kills}</div>
+                            <div className="text-lg px-2">{state.currentMatch.teamStats[team.id]?.kills ?? 0}</div>
                             <button onClick={() => handleKillChange(team.id, 1)} className="inline-flex items-center justify-center px-3 py-1 bg-green-600 rounded">+</button>
                           </>
                         ) : (
@@ -714,7 +712,7 @@ function App() {
 
                       {/* Position column */}
                       <div className="flex gap-2 items-center">
-                        {!obsMode && state.currentMatch.status === "live" ? (
+                        {!locked ? (
                           <select value={stats.position ?? ""} onChange={(e) => handlePositionChange(team.id, e.target.value ? parseInt(e.target.value, 10) : null)} className="bg-neutral-700 text-sm px-2 py-1 rounded">
                             <option value="">Pos</option>
                             {Array.from({ length: state.teams.length }).map((_, i) => (
