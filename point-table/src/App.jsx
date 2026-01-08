@@ -136,18 +136,19 @@ export function LivePanel({
                       ))}
                     </select>
                   ) : (
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-3">
                       <button
                         onClick={() => onKillChange(team.id, -1)}
                         aria-label={`decrease ${team.name} kills`}
-                        className="px-2 py-1 bg-red-600 rounded"
+                        className="px-3 py-1 bg-red-600 rounded"
                       >
                         -
                       </button>
+                      <div className="px-2 text-lg">{stats.kills}</div>
                       <button
                         onClick={() => onKillChange(team.id, 1)}
                         aria-label={`increase ${team.name} kills`}
-                        className="px-2 py-1 bg-green-600 rounded"
+                        className="px-3 py-1 bg-green-600 rounded"
                       >
                         +
                       </button>
@@ -683,12 +684,12 @@ function App() {
                       <div className="font-medium">{team.name}</div>
 
                       {/* Kills column: show +/- when match is live and not in OBS */}
-                      <div className="flex gap-2 items-center">
+                      <div className="flex items-center gap-3">
                         {!obsMode && !locked ? (
                           <>
-                            <button onClick={() => handleKillChange(team.id, -1)} className="px-2 py-1 bg-red-600 rounded">-</button>
-                            <div className="text-lg">{stats.kills}</div>
-                            <button onClick={() => handleKillChange(team.id, 1)} className="px-2 py-1 bg-green-600 rounded">+</button>
+                            <button onClick={() => handleKillChange(team.id, -1)} className="px-3 py-1 bg-red-600 rounded">-</button>
+                            <div className="text-lg px-2">{stats.kills}</div>
+                            <button onClick={() => handleKillChange(team.id, 1)} className="px-3 py-1 bg-green-600 rounded">+</button>
                           </>
                         ) : (
                           <div className="text-lg">{stats.kills}</div>
