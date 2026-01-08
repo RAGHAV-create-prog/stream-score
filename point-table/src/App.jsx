@@ -548,14 +548,30 @@ function App() {
           <div>
             <h1 className="text-2xl font-semibold">Stream Score</h1>
             <div className="text-sm text-gray-400">Live Tournament Scoring for Streamers</div>
+
+            {/* Horizontal live leaderboard strip */}
+            <div className="mt-3 flex flex-wrap gap-3">
+              {computedTeams.slice(0, 8).map((t, i) => (
+                <div key={t.id} className="px-3 py-2 bg-neutral-800 rounded text-sm min-w-[160px]">
+                  <div className="font-semibold">{i + 1}. {t.name}</div>
+                  <div className="text-xs text-gray-400">{t.totalPoints} pts • {t.totalKills} kills</div>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="flex gap-2">
-            {!obsMode && lastResults && (
-              <button onClick={handleCopyResults} className="px-3 py-1 rounded bg-indigo-600">
+            {/* Copy Results always visible (disabled when none) */}
+            {!obsMode && (
+              <button
+                onClick={handleCopyResults}
+                disabled={!lastResults}
+                className={`px-3 py-1 rounded bg-indigo-600 ${!lastResults ? "opacity-50 cursor-not-allowed" : ""}`}
+              >
                 {copying ? "Copying..." : "Copy Results"}
               </button>
             )}
+
             <button onClick={() => setObsMode((v) => !v)} className={`px-3 py-1 rounded ${obsMode ? "bg-red-600" : "bg-green-600"}`}>
               {obsMode ? "OBS: ON" : "OBS: OFF"}
             </button>
