@@ -565,7 +565,12 @@ function App() {
           </div>
         </div>
 
-        {showSetup ? (
+        {obsMode ? (
+          // OBS mode: show only big leaderboard
+          <div className="w-full h-[calc(100vh-64px)]">
+            <Leaderboard teams={computedTeams} obsMode={true} />
+          </div>
+        ) : showSetup ? (
           // ---------- Setup Screen ----------
           <div className="space-y-4">
             <div className="p-4 bg-neutral-800 rounded">
@@ -672,16 +677,27 @@ function App() {
 
                 {computedTeams.map((team) => {
                   const stats = state.currentMatch.teamStats[team.id] || { kills: 0, position: null };
+                  const locked = state.currentMatch.status !== "live";
                   return (
                     <div key={team.id} className="grid grid-cols-3 gap-4 items-center">
                       <div className="font-medium">{team.name}</div>
 
+                      {/* Kills column: show +/- when match is live and not in OBS */}
                       <div className="flex gap-2 items-center">
-                        <div className="text-lg">{stats.kills}</div>
+                        {!obsMode && !locked ? (
+                          <>
+                            <button onClick={() => handleKillChange(team.id, -1)} className="px-2 py-1 bg-red-600 rounded">-</button>
+                            <div className="text-lg">{stats.kills}</div>
+                            <button onClick={() => handleKillChange(team.id, 1)} className="px-2 py-1 bg-green-600 rounded">+</button>
+                          </>
+                        ) : (
+                          <div className="text-lg">{stats.kills}</div>
+                        )}
                       </div>
 
+                      {/* Position column */}
                       <div className="flex gap-2 items-center">
-                        {state.currentMatch.status === "live" ? (
+                        {!obsMode && state.currentMatch.status === "live" ? (
                           <select value={stats.position ?? ""} onChange={(e) => handlePositionChange(team.id, e.target.value ? parseInt(e.target.value, 10) : null)} className="bg-neutral-700 text-sm px-2 py-1 rounded">
                             <option value="">Pos</option>
                             {Array.from({ length: state.teams.length }).map((_, i) => (
@@ -691,7 +707,7 @@ function App() {
                             ))}
                           </select>
                         ) : (
-                          <div className="text-lg">{stats.position}</div>
+                          <div className="text-lg">{stats.position ?? "-"}</div>
                         )}
                       </div>
                     </div>
