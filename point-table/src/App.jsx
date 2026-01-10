@@ -136,23 +136,12 @@ export function LivePanel({
                       ))}
                     </select>
                   ) : (
-                    <>
-                      <button
-                        onClick={() => onKillChange(team.id, -1)}
-                        aria-label={`decrease ${team.name} kills`}
-                        className="inline-flex items-center justify-center px-3 py-1 bg-red-600 rounded"
-                      >
-                        -
-                      </button>
-                      <div className="px-2 text-lg">{stats.kills}</div>
-                      <button
-                        onClick={() => onKillChange(team.id, 1)}
-                        aria-label={`increase ${team.name} kills`}
-                        className="inline-flex items-center justify-center px-3 py-1 bg-green-600 rounded"
-                      >
-                        +
-                      </button>
-                    </>
+                    // Use KillControls to guarantee horizontal layout
+                    <KillControls
+                      kills={stats.kills}
+                      onChange={(delta) => onKillChange(team.id, delta)}
+                      disabled={false}
+                    />
                   )}
                 </div>
               </div>
@@ -184,6 +173,36 @@ export function LivePanel({
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+// Add this small component near the top (before LivePanel)
+function KillControls({ kills = 0, onChange = () => {}, disabled = false }) {
+  return (
+    <div
+      className="flex flex-row items-center gap-3 whitespace-nowrap"
+      style={{ display: "inline-flex", flexDirection: "row", alignItems: "center" }}
+    >
+      <button
+        type="button"
+        onClick={() => onChange(-1)}
+        disabled={disabled}
+        className="inline-flex items-center justify-center w-10 h-10 bg-red-600 rounded"
+      >
+        -
+      </button>
+
+      <div className="text-lg w-8 text-center tabular-nums">{kills}</div>
+
+      <button
+        type="button"
+        onClick={() => onChange(1)}
+        disabled={disabled}
+        className="inline-flex items-center justify-center w-10 h-10 bg-green-600 rounded"
+      >
+        +
+      </button>
     </div>
   );
 }
@@ -700,11 +719,10 @@ function App() {
                       {/* Kills column: show +/- when match is live */}
                       <div className="flex items-center gap-3 whitespace-nowrap">
                         {!locked ? (
-                          <>
-                            <button onClick={() => handleKillChange(team.id, -1)} className="inline-flex items-center justify-center px-3 py-1 bg-red-600 rounded">-</button>
-                            <div className="text-lg px-2">{state.currentMatch.teamStats[team.id]?.kills ?? 0}</div>
-                            <button onClick={() => handleKillChange(team.id, 1)} className="inline-flex items-center justify-center px-3 py-1 bg-green-600 rounded">+</button>
-                          </>
+                          <KillControls
+                            kills={state.currentMatch.teamStats[team.id]?.kills ?? 0}
+                            onChange={(delta) => handleKillChange(team.id, delta)}
+                          />
                         ) : (
                           <div className="text-lg">{stats.kills}</div>
                         )}
