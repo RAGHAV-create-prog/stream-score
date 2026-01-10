@@ -214,7 +214,22 @@ function App() {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return initialState;
       const parsed = JSON.parse(raw);
-      return parsed?.state ?? initialState;
+      const loaded = parsed?.state ?? initialState;
+
+      // If the tournament was never started, always show the setup page:
+      if (!loaded?.tournament?.started) {
+        // ensure teamStats exists for current teams and reset match to #1 live
+        const teamStats = {};
+        (loaded.teams || []).forEach((t) => (teamStats[t.id] = { kills: 0, position: null }));
+
+        return {
+          ...loaded,
+          tournament: { ...loaded.tournament, started: false },
+          currentMatch: { matchNumber: 1, status: "live", resultsApplied: false, teamStats },
+        };
+      }
+
+      return loaded;
     } catch {
       return initialState;
     }
